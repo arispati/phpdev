@@ -1,0 +1,20 @@
+{
+    "name": "arispati/phpdev",
+    "description": "A more enjoyable local development experience for WSL on Windows.",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Arispati\\Phpdev\\": "cli/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Aris",
+            "email": "masarispati@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "mnapoli/silly": "^1.9"
+    }
+}
