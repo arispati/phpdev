@@ -3,6 +3,9 @@
     "description": "A more enjoyable local development experience for WSL on Windows.",
     "license": "MIT",
     "autoload": {
+        "files": [
+            "cli/includes/compatibility.php"
+        ],
         "psr-4": {
             "Arispati\\Phpdev\\": "cli/"
         }
@@ -16,6 +19,7 @@
     "require": {
         "php": "^8.0",
         "mnapoli/silly": "^1.9",
-        "symfony/process": "^7.1"
+        "symfony/process": "^7.1",
+        "illuminate/collections": "^11.30"
     }
 }
