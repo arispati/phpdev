@@ -14,8 +14,14 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 
 $version = '1.0.0';
 
-$app = new Application('Arispati Vel', $version);
+$app = new Application('Arispati Phpdev', $version);
 
-$app->command('hello', new Commands\Hello());
+// command classes
+$nginxCommand = new Commands\Nginx();
+$phpCommand = new Commands\Php();
+
+// register commands
+$app->command('nginx action', [$nginxCommand, 'handle']);
+$app->command('php action', [$phpCommand, 'handle']);
 
 return $app;
