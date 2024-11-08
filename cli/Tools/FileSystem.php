@@ -1,6 +1,6 @@
 <?php
 
-namespace Arispati\Phpdev\Drivers;
+namespace Arispati\Phpdev\Tools;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
