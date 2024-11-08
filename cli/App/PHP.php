@@ -2,8 +2,6 @@
 
 namespace Arispati\Phpdev\App;
 
-use Arispati\Phpdev\Tools\CommandLine;
-
 class PHP
 {
     protected Brew $brew;
@@ -26,18 +24,20 @@ class PHP
     {
         // if empty, use current php version
         if (empty($php)) {
-            $php = sprintf('%s.%s', PHP_MAJOR_VERSION, PHP_MINOR_VERSION);
-            goto return_version;
+            return sprintf('%s.%s', PHP_MAJOR_VERSION, PHP_MINOR_VERSION);
         }
-
-        $splitVersion = explode('.', $php);
-
-        return $php ? $php : sprintf('%s.%s', PHP_MAJOR_VERSION, PHP_MINOR_VERSION);
-
-        return_version:
-        return $php;
+        // parse the given php version
+        $version = explode('.', $php);
+        // return php version
+        return sprintf('%s.%s', $version[0], $version[1] ?? 0);
     }
 
+    /**
+     * Ensure php version installed
+     *
+     * @param string $version
+     * @return boolean
+     */
     public function installed(string $version): bool
     {
         return $this->brew->installed(sprintf('php@%s', $version));
