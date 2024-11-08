@@ -4,7 +4,8 @@
     "license": "MIT",
     "autoload": {
         "files": [
-            "cli/includes/compatibility.php"
+            "cli/includes/compatibility.php",
+            "cli/includes/helpers.php"
         ],
         "psr-4": {
             "Arispati\\Phpdev\\": "cli/"
