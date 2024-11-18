@@ -62,6 +62,22 @@ class Brew
     }
 
     /**
+     * Start the given Homebrew services.
+     */
+    public function startService($services): void
+    {
+        $services = is_array($services) ? $services : func_get_args();
+
+        foreach ($services as $service) {
+            if ($this->installed($service)) {
+                info("Starting {$service}...");
+                // start service
+                $this->cli->quietly('brew services start ' . $service);
+            }
+        }
+    }
+
+    /**
      * Restart the given Homebrew services.
      */
     public function restartService($services): void
@@ -71,11 +87,27 @@ class Brew
         foreach ($services as $service) {
             if ($this->installed($service)) {
                 info("Restarting {$service}...");
-
                 // stop service
                 $this->cli->quietly('brew services stop ' . $service);
                 // start service
                 $this->cli->quietly('brew services start ' . $service);
+            }
+        }
+    }
+
+    /**
+     * Stop the given Homebrew services.
+     */
+    public function stopService($services): void
+    {
+        $services = is_array($services) ? $services : func_get_args();
+
+        foreach ($services as $service) {
+            if ($this->installed($service)) {
+                info("Stopping {$service}...");
+
+                // first we ensure that the service is not incorrectly running as non-root
+                $this->cli->quietly('brew services stop ' . $service);
             }
         }
     }

@@ -49,7 +49,7 @@ class Configuration
     public function read(): array
     {
         if (! $this->file->exists($this->path())) {
-            return [];
+            $this->ensureBaseConfiguration();
         }
 
         return json_decode($this->file->get($this->path()), true, 512, JSON_THROW_ON_ERROR);

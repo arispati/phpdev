@@ -2,6 +2,7 @@
 
 namespace PhpDev\App;
 
+use PhpDev\Facades\Configuration;
 use PhpDev\Tools\Filesystem;
 
 use function PhpDev\info;
@@ -26,10 +27,27 @@ class PhpFpm
     {
         info('Installing and configuring phpfpm...');
 
-        $phpVersion = $this->brew->linkedPhp();
-        $this->createConfigurationFiles($phpVersion);
+        $this->createConfigurationFiles($this->brew->linkedPhp());
 
         $this->restart();
+    }
+
+    /**
+     * start the PHP FPM process.
+     */
+    public function start(): void
+    {
+        info('Starting phpfpm...');
+        $this->brew->startService($this->utilizedPhpVersions());
+    }
+
+    /**
+     * Stop the PHP FPM process.
+     */
+    public function stop(): void
+    {
+        info('Stopping phpfpm...');
+        $this->brew->stopService($this->utilizedPhpVersions());
     }
 
     /**
@@ -85,13 +103,13 @@ class PhpFpm
         // rename (to disable) old FPM Pool configuration
         $oldFile = dirname($fpmConfigFile) . '/www.conf';
         if (file_exists($oldFile)) {
-            rename($oldFile, $oldFile . '-backup');
+            rename($oldFile, $oldFile . '-phpdev-backup');
         }
 
         // Create FPM Config File from stub
         $contents = str_replace(
             ['PHPDEV_USER', 'PHPDEV_GROUP', 'PHPDEV_PHP_FPM_PATH', 'phpdev.sock'],
-            [user(), user(), PHPDEV_HOME_PATH, self::fpmSockName($phpVersion)],
+            [user(), user(), PHPDEV_HOME_PATH, $this->fpmSockName($phpVersion)],
             $this->file->getStub('phpfpm.conf')
         );
         $this->file->put($fpmConfigFile, $contents);
@@ -115,11 +133,23 @@ class PhpFpm
     /**
      * Get FPM sock file name for a given PHP version.
      */
-    public static function fpmSockName(?string $phpVersion = null): string
+    public function fpmSockName(?string $phpVersion = null): string
     {
         $versionInteger = preg_replace('~[^\d]~', '', $phpVersion);
 
         return "phpdev{$versionInteger}.sock";
+    }
+
+    /**
+     * Get FPM sock file path for a given PHP version.
+     */
+    public function fpmSockPath(?string $phpVersion = null): string
+    {
+        if (is_null($phpVersion)) {
+            $phpVersion = $this->getVersion();
+        }
+
+        return sprintf(PHPDEV_HOME_PATH . '/%s', $this->fpmSockName($phpVersion));
     }
 
     /**
@@ -128,5 +158,14 @@ class PhpFpm
     public function normalizePhpVersion(?string $version): string
     {
         return preg_replace('/(?:php@?)?([0-9+])(?:.)?([0-9+])/i', 'php@$1.$2', (string) $version);
+    }
+
+    public function utilizedPhpVersions(): array
+    {
+        $config = Configuration::read();
+
+        return array_map(function ($phpVersion) {
+            return sprintf('php@%s', $phpVersion);
+        }, $config['php']);
     }
 }
