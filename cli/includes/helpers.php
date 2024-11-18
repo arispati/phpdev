@@ -1,8 +1,8 @@
 <?php
 
-namespace Arispati\Phpdev;
+namespace PhpDev;
 
-use Arispati\Phpdev\Tools\CommandLine;
+use PhpDev\Tools\CommandLine;
 use Illuminate\Container\Container;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;

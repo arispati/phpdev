@@ -1,6 +1,6 @@
 <?php
 
-namespace Arispati\Phpdev\App;
+namespace PhpDev\App;
 
 class Site
 {

@@ -1,38 +1,38 @@
 <?php
 
-// Allow bypassing these checks if using Phpdev in a non-CLI app
+// Allow bypassing these checks if using PhpDev in a non-CLI app
 if (php_sapi_name() !== 'cli') {
     return;
 }
 
 /**
- * Check the system's compatibility with Phpdev.
+ * Check the system's compatibility with PhpDev.
  */
 $inTestingEnvironment = strpos($_SERVER['SCRIPT_NAME'], 'phpunit') !== false;
 
 $inWslEnvironment = str_contains(strtolower(exec('uname -r')), 'microsoft');
 
 if (PHP_OS !== 'Linux' && ! $inWslEnvironment && ! $inTestingEnvironment) {
-    echo 'Phpdev only supports WSL.' . PHP_EOL;
+    echo 'PhpDev only supports WSL.' . PHP_EOL;
 
     exit(1);
 } else {
     // ensure current OS is ubuntu
     if (exec('grep "ID=ubuntu" /etc/os-release') == '') {
-        echo 'Phpdev only supports Ubuntu.' . PHP_EOL;
+        echo 'PhpDev only supports Ubuntu.' . PHP_EOL;
 
         exit(1);
     }
 }
 
-if (version_compare(PHP_VERSION, '8.0', '<')) {
-    echo 'Phpdev requires PHP 8.0 or later.' . PHP_EOL;
+if (version_compare(PHP_VERSION, '7.4', '<')) {
+    echo 'PhpDev requires PHP 7.4 or later.' . PHP_EOL;
 
     exit(1);
 }
 
 if (exec('which nginx') == '' && ! $inTestingEnvironment) {
-    echo 'Phpdev requires Nginx to be installed on your WSL.' . PHP_EOL;
+    echo 'PhpDev requires Nginx to be installed on your WSL.' . PHP_EOL;
 
     exit(1);
 } else {
@@ -45,7 +45,7 @@ if (exec('which nginx') == '' && ! $inTestingEnvironment) {
 }
 
 if (exec('which brew') == '' && ! $inTestingEnvironment) {
-    echo 'Phpdev requires Homebrew to be installed on your WSL.' . PHP_EOL;
+    echo 'PhpDev requires Homebrew to be installed on your WSL.' . PHP_EOL;
 
     exit(1);
 }

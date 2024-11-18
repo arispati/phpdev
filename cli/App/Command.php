@@ -1,12 +1,12 @@
 <?php
 
-namespace Arispati\Phpdev\App;
+namespace PhpDev\App;
 
-use Arispati\Phpdev\Tools\Filesystem;
+use PhpDev\Tools\Filesystem;
 use Silly\Command\Command as SillyCommand;
 
-use function Arispati\Phpdev\output;
-use function Arispati\Phpdev\warning;
+use function PhpDev\output;
+use function PhpDev\warning;
 
 class Command
 {

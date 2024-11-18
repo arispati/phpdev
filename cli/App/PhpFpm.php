@@ -1,11 +1,11 @@
 <?php
 
-namespace Arispati\Phpdev\App;
+namespace PhpDev\App;
 
-use Arispati\Phpdev\Tools\Filesystem;
+use PhpDev\Tools\Filesystem;
 
-use function Arispati\Phpdev\info;
-use function Arispati\Phpdev\user;
+use function PhpDev\info;
+use function PhpDev\user;
 
 class PhpFpm
 {

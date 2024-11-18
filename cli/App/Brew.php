@@ -1,14 +1,14 @@
 <?php
 
-namespace Arispati\Phpdev\App;
+namespace PhpDev\App;
 
-use Arispati\Phpdev\Tools\CommandLine;
-use Arispati\Phpdev\Tools\Filesystem;
+use PhpDev\Tools\CommandLine;
+use PhpDev\Tools\Filesystem;
 use DomainException;
 use Illuminate\Support\Collection;
 
-use function Arispati\Phpdev\info;
-use function Arispati\Phpdev\starts_with;
+use function PhpDev\info;
+use function PhpDev\starts_with;
 
 class Brew
 {

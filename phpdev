@@ -41,12 +41,6 @@ else
 fi
 
 # Finally, for every other command we will just proxy into the PHP tool
-# and let it handle the request. These are commands which can be run
-# without sudo and don't require taking over terminals like Ngrok.
-# if [[ "$EUID" -ne 0 ]]
-# then
-#     sudo USER="$USER" --preserve-env "$SOURCE" "$@"
-#     exit
-# fi
+# and let it handle the request.
 
-"$PHP" "$DIR/cli/phpdev.php" "$@"
+"$PHP" "$DIR/cli/PhpDev.php" "$@"

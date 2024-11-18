@@ -1,6 +1,6 @@
 <?php
 
-namespace Arispati\Phpdev\App;
+namespace Phpdev;
 
 use Illuminate\Container\Container;
 
@@ -11,7 +11,7 @@ class Facade
      */
     public static function containerKey(): string
     {
-        return 'Arispati\\Phpdev\\App\\' . basename(str_replace('\\', '/', get_called_class()));
+        return 'Phpdev\\App\\' . basename(str_replace('\\', '/', get_called_class()));
     }
 
     /**

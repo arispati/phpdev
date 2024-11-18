@@ -1,11 +1,11 @@
 <?php
 
-namespace Arispati\Phpdev\App;
+namespace PhpDev\App;
 
-use Arispati\Phpdev\Tools\Filesystem;
+use PhpDev\Tools\Filesystem;
 
-use function Arispati\Phpdev\tap;
-use function Arispati\Phpdev\user;
+use function PhpDev\tap;
+use function PhpDev\user;
 
 class Configuration
 {

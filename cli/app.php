@@ -1,8 +1,8 @@
 <?php
 
-use Arispati\Phpdev\App\Facades\Command;
-use Arispati\Phpdev\App\Facades\Configuration;
-use Arispati\Phpdev\App\Facades\PhpFpm;
+use Phpdev\App\Facades\Command;
+use Phpdev\App\Facades\Configuration;
+use Phpdev\App\Facades\PhpFpm;
 use Illuminate\Container\Container;
 use Silly\Application;
 
@@ -22,20 +22,21 @@ Container::setInstance(new Container());
 $version = '1.0.0';
 
 // Initiate application
-$app = new Application('Arispati Phpdev', $version);
+$app = new Application('PhpDev', $version);
 
 // register commands
 $app->command('install', function () {
-    Configuration::install();
-    PhpFpm::install();
-})->descriptions('Install the Phpdev services');
+    // Configuration::install();
+    // PhpFpm::install();
+    echo 'test';
+})->descriptions('Install the PhpDev services');
 
-$app->command('link [path] [-s|--site=] [-p|--php=]', function ($path, $site, $php) {
-    Command::link($path, $site, $php);
-})->descriptions('Link the current working directory to Phpdev', [
-    'path' => 'Root directory path for the site. Default: current directory path',
-    '--site' => 'Site name. Default: current directory name',
-    '--php' => 'Which php version to use. Default: current php version'
-]);
+// $app->command('link [path] [-s|--site=] [-p|--php=]', function ($path, $site, $php) {
+//     Command::link($path, $site, $php);
+// })->descriptions('Link the current working directory to Phpdev', [
+//     'path' => 'Root directory path for the site. Default: current directory path',
+//     '--site' => 'Site name. Default: current directory name',
+//     '--php' => 'Which php version to use. Default: current php version'
+// ]);
 
 return $app;

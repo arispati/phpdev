@@ -1,6 +1,6 @@
 <?php
 
-namespace Arispati\Phpdev\Tools;
+namespace PhpDev\Tools;
 
 use Symfony\Component\Process\Process;
 
