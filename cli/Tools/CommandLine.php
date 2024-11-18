@@ -6,9 +6,14 @@ use Symfony\Component\Process\Process;
 
 class CommandLine
 {
+    /**
+     * Run the given command.
+     */
     public function runCommand(string $command, ?callable $onError = null): string
     {
-        $onError = $onError ?: function () {};
+        $onError = $onError ?: function () {
+            //
+        };
 
         $process = Process::fromShellCommandline($command);
 
@@ -22,5 +27,13 @@ class CommandLine
         }
 
         return $processOutput;
+    }
+
+    /**
+     * Simple global function to run commands quietly.
+     */
+    public function quietly(string $command): void
+    {
+        $this->runCommand($command . ' > /dev/null 2>&1');
     }
 }

@@ -14,11 +14,12 @@ class Site
     {
         // is name already given
         if (! empty($name)) {
-            return $name;
+            goto site_name;
         }
         // set name by directory name
         $name = basename(PHPDEV_CURRENT_DIR_PATH);
         // return site name
+        site_name:
         return sprintf('%s.%s', $name, PHPDEV_TLD);
     }
 }

@@ -21,6 +21,7 @@
         "php": "^8.0",
         "mnapoli/silly": "^1.9",
         "symfony/process": "^7.1",
-        "illuminate/collections": "^11.30"
+        "illuminate/collections": "^11.0",
+        "illuminate/container": "^11.0"
     }
 }
