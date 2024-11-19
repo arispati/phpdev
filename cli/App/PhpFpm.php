@@ -21,13 +21,24 @@ class PhpFpm
     }
 
     /**
+     * Get service name
+     *
+     * @param string $version
+     * @return string
+     */
+    public function serviceName(string $version): string
+    {
+        return sprintf('php@%s', $version);
+    }
+
+    /**
      * Install and configure PhpFpm.
      */
     public function install(): void
     {
         info('Installing and configuring phpfpm...');
 
-        $this->createConfigurationFiles($this->brew->linkedPhp());
+        $this->createConfigurationFiles($this->getVersion());
 
         $this->restart();
     }
@@ -35,10 +46,13 @@ class PhpFpm
     /**
      * start the PHP FPM process.
      */
-    public function start(): void
+    public function start(?string $phpVersion = null): void
     {
         info('Starting phpfpm...');
-        $this->brew->startService($this->utilizedPhpVersions());
+        // get services
+        $services = is_null($phpVersion) ? $this->utilizedPhpVersions() : $this->serviceName($phpVersion);
+        // start services
+        $this->brew->startService($services);
     }
 
     /**
@@ -47,6 +61,7 @@ class PhpFpm
     public function stop(): void
     {
         info('Stopping phpfpm...');
+        // stop service
         $this->brew->stopService($this->utilizedPhpVersions());
     }
 
@@ -55,7 +70,10 @@ class PhpFpm
      */
     public function restart(?string $phpVersion = null): void
     {
-        $this->brew->restartService($phpVersion ?: $this->utilizedPhpVersions());
+        // get services
+        $services = is_null($phpVersion) ? $this->utilizedPhpVersions() : $this->serviceName($phpVersion);
+        // restart service
+        $this->brew->restartService($services);
     }
 
     /**
@@ -84,7 +102,7 @@ class PhpFpm
      */
     public function installed(string $version): bool
     {
-        return $this->brew->installed(sprintf('php@%s', $version));
+        return $this->brew->installed($this->serviceName($version));
     }
 
     /**
@@ -118,16 +136,13 @@ class PhpFpm
     /**
      * Get the path to the FPM configuration file for the current PHP version.
      */
-    public function fpmConfigPath(?string $phpVersion = null): string
+    public function fpmConfigPath(string $phpVersion): string
     {
-        if (! $phpVersion) {
-            $phpVersion = $this->brew->linkedPhp();
-        }
-
-        $versionNormalized = $this->normalizePhpVersion($phpVersion === 'php' ? Brew::LATEST_PHP_VERSION : $phpVersion);
-        $versionNormalized = preg_replace('~[^\d\.]~', '', $versionNormalized);
-
-        return PHPDEV_BREW_PATH . "/etc/php/{$versionNormalized}/php-fpm.d/phpdev-fpm.conf";
+        return sprintf(
+            '%s/etc/php/%s/php-fpm.d/phpdev-fpm.conf',
+            PHPDEV_BREW_PATH,
+            $phpVersion
+        );
     }
 
     /**
@@ -137,7 +152,7 @@ class PhpFpm
     {
         $versionInteger = preg_replace('~[^\d]~', '', $phpVersion);
 
-        return "phpdev{$versionInteger}.sock";
+        return sprintf('phpdev%s.sock', $versionInteger);
     }
 
     /**
@@ -152,20 +167,12 @@ class PhpFpm
         return sprintf(PHPDEV_HOME_PATH . '/%s', $this->fpmSockName($phpVersion));
     }
 
-    /**
-     * If passed php7.4, or php74, 7.4, or 74 formats, normalize to php@7.4 format.
-     */
-    public function normalizePhpVersion(?string $version): string
-    {
-        return preg_replace('/(?:php@?)?([0-9+])(?:.)?([0-9+])/i', 'php@$1.$2', (string) $version);
-    }
-
     public function utilizedPhpVersions(): array
     {
         $config = Configuration::read();
 
         return array_map(function ($phpVersion) {
-            return sprintf('php@%s', $phpVersion);
+            return $this->serviceName($phpVersion);
         }, $config['php']);
     }
 }

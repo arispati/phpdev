@@ -46,13 +46,15 @@ class Configuration
     /**
      * Read the configuration file as JSON.
      */
-    public function read(): array
+    public function read(?string $key = null): array
     {
         if (! $this->file->exists($this->path())) {
             $this->ensureBaseConfiguration();
         }
 
-        return json_decode($this->file->get($this->path()), true, 512, JSON_THROW_ON_ERROR);
+        $config = json_decode($this->file->get($this->path()), true, 512, JSON_THROW_ON_ERROR);
+
+        return is_null($key) ? $config : $config[$key];
     }
 
     /**

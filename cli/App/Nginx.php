@@ -12,6 +12,7 @@ class Nginx
 {
     public const NGINX_CONFIG_PATH = '/etc/nginx/nginx.conf';
     public const NGINX_DEFAULT_SITE = '/etc/nginx/sites-enabled/default';
+    public const NGINX_SITE_CONFIG = '/etc/nginx/sites-enabled';
 
     public function __construct(
         protected CommandLine $cli,
@@ -61,7 +62,7 @@ class Nginx
         // configure default host
         $defaultConfig = str_replace(
             ['PHPDEV_SERVER_NAME', 'PHPDEV_SERVER_ROOT_DIR', 'PHPDEV_PHP_FPM'],
-            ['localhost', '/var/www/html',$this->php->fpmSockPath()],
+            ['localhost', '/var/www/html', $this->php->fpmSockPath()],
             $this->file->getStub('site.conf')
         );
 
@@ -104,5 +105,31 @@ class Nginx
         info('Stopping nginx...');
 
         $this->cli->runCommand('sudo service nginx stop');
+    }
+
+    public function createConfiguration(string $site, string $path, string $php)
+    {
+        info(sprintf('Installing %s configuration', $site));
+        // site configuration path
+        $siteConfigPath = sprintf('%s/%s', self::NGINX_SITE_CONFIG, $site);
+        // site configuration
+        $siteConfig = str_replace(
+            ['PHPDEV_SERVER_NAME', 'PHPDEV_SERVER_ROOT_DIR', 'PHPDEV_PHP_FPM'],
+            [$site, $path, $this->php->fpmSockPath($php)],
+            $this->file->getStub('site.conf')
+        );
+        // create site configuration file
+        $this->cli->runCommand(sprintf('sudo touch %s', $siteConfigPath));
+        // write site configuration
+        $this->cli->runCommand("echo '$siteConfig' | sudo tee $siteConfigPath");
+    }
+
+    public function removeConfiguration(string $site)
+    {
+        info(sprintf('Removing %s configuration', $site));
+        // site configuration path
+        $siteConfigPath = sprintf('%s/%s', self::NGINX_SITE_CONFIG, $site);
+        // remove site configuration
+        $this->cli->runCommand(sprintf('sudo rm %s', $siteConfigPath));
     }
 }

@@ -20,6 +20,9 @@ class Site
         $name = basename(PHPDEV_CURRENT_DIR_PATH);
         // return site name
         site_name:
+        // normalized site name
+        $name = rtrim($name, '.' . PHPDEV_TLD);
+        // return site name with TLD
         return sprintf('%s.%s', $name, PHPDEV_TLD);
     }
 }
