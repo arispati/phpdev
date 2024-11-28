@@ -10,6 +10,7 @@ use Silly\Command\Command;
 
 use function PhpDev\info;
 use function PhpDev\output;
+use function PhpDev\table;
 use function PhpDev\warning;
 
 // Load correct autoloader depending on install location.
@@ -109,6 +110,12 @@ $app->command('link [path] [-s|--site=] [-p|--php=]', function ($path, $site, $p
     '--site' => 'Site name. Default: current directory name',
     '--php' => 'Which php version to use. Default: current php version'
 ]);
+
+$app->command('links', function () {
+    $sites = Configuration::read('sites');
+    table(['name', 'path', 'php'], array_values($sites));
+    // print_r($sites);
+})->descriptions('Show all linked sites');
 
 $app->command('unlink [site]', function ($site) {
     // validate empty site

@@ -4,6 +4,7 @@ namespace PhpDev;
 
 use PhpDev\Tools\CommandLine;
 use Illuminate\Container\Container;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -74,6 +75,32 @@ function info($output): void
 function warning(string $output): void
 {
     output('<fg=red>' . $output . '</>');
+}
+
+/**
+ * Output a table to the console.
+ */
+function table(array $headers = [], array $rows = []): void
+{
+    $table = new Table(writer());
+
+    $table->setHeaders($headers)->setRows($rows);
+
+    $table->render();
+}
+
+/**
+ * Determine if a given string ends with a given substring.
+ */
+function ends_with(string $haystack, array|string $needles): bool
+{
+    foreach ((array) $needles as $needle) {
+        if (substr($haystack, -strlen($needle)) === (string) $needle) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
