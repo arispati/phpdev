@@ -23,5 +23,8 @@
         "symfony/process": "^7.1",
         "illuminate/collections": "^11.0",
         "illuminate/container": "^11.0"
-    }
+    },
+    "bin": [
+        "phpdev"
+    ]
 }
