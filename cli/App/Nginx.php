@@ -143,6 +143,30 @@ class Nginx
     }
 
     /**
+     * Create proxy configuration for site
+     *
+     * @param string $site
+     * @param string $destination
+     * @return void
+     */
+    public function createProxyConfiguration(string $site, string $destination): void
+    {
+        Helper::info(sprintf('Installing %s configuration', $site));
+        // site configuration path
+        $siteConfigPath = sprintf('%s/%s', PHPDEV_NGINX_SITE_PATH, $site);
+        // site configuration
+        $siteConfig = str_replace(
+            ['PHPDEV_SERVER_NAME', 'PHPDEV_PROXY_DESTINATION'],
+            [$site, $destination],
+            File::getStub('proxy.conf')
+        );
+        // create site configuration file
+        Cli::runCommand(sprintf('sudo touch %s', $siteConfigPath));
+        // write site configuration
+        Cli::runCommand("echo '$siteConfig' | sudo tee $siteConfigPath");
+    }
+
+    /**
      * Remove site configuration
      *
      * @param string $site

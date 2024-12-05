@@ -145,6 +145,31 @@ $app->command('link [path] [-s|--site=] [-p|--php=]', function ($path, $site, $p
     '--php' => 'Which php version to use. Default: current php version'
 ]);
 
+// Link site to PhpDev
+$app->command('proxy site destination', function ($site, $destination) {
+    $site = Site::name($site);
+    // validate site
+    if (Config::siteExists($site)) {
+        Helper::warning(PHP_EOL . 'Error:');
+        Helper::write(PHP_EOL . 'Site name already linked');
+        // exit command
+        return Command::FAILURE;
+    }
+    Helper::info(sprintf(PHP_EOL . 'Proxying %s to %s', $site, $destination));
+    Helper::write();
+    // create nginx configuration
+    Nginx::createProxyConfiguration($site, $destination);
+    // restart nginx
+    Nginx::restart();
+    // add site to config
+    Config::addSite('proxy', $site, $destination);
+
+    Helper::info(PHP_EOL . sprintf('%s has been proxied to %s', $site, $destination));
+})->descriptions('Add proxy site', [
+    'site' => 'Site name.',
+    'destination' => 'Proxy destination.'
+]);
+
 // Unlink site
 $app->command('unlink site', function ($site) {
     // define variable
