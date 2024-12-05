@@ -79,3 +79,21 @@ $app->command('link [path] [-s|--site=] [-p|--php=]', function ($path, $site, $p
     '--site' => 'Site name. Default: current directory name',
     '--php' => 'Which php version to use. Default: current php version'
 ]);
+
+// show linked site
+$app->command('links', function () {
+    $headers = ['name', 'type', 'php', 'path'];
+    $sites = array_map(function ($item) use ($headers) {
+        $result = [];
+        foreach ($headers as $header) {
+            $result[] = isset($item[$header]) ? $item[$header] : '-';
+        }
+        return $result;
+    }, Config::read('sites'));
+    // sort
+    usort($sites, function ($a, $b) {
+        return $a[3] <=> $b[3];
+    });
+    // show table
+    Helper::table($headers, array_values($sites));
+})->descriptions('Show all linked sites');

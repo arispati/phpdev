@@ -8,17 +8,6 @@ use PhpDev\Helper\Helper;
 class Config
 {
     /**
-     * Class constructor
-     *
-     * @param File $file
-     */
-    public function __construct(
-        protected PhpFpm $php
-    ) {
-        //
-    }
-
-    /**
      * Initiate configuration
      *
      * @return void
@@ -48,7 +37,7 @@ class Config
     {
         if (! File::exists($this->path())) {
             $this->write([
-                'php' => [$this->php->getVersion()],
+                'php' => [],
                 'sites' => []
             ]);
         }
