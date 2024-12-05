@@ -19,6 +19,43 @@ class Config
     }
 
     /**
+     * Ensure site exists
+     *
+     * @param string $site
+     * @return boolean
+     */
+    public function siteExists(string $site): bool
+    {
+        return is_array($this->siteGet($site));
+    }
+
+    /**
+     * Get site config
+     *
+     * @param string $site
+     * @return array|null
+     */
+    public function siteGet($site): ?array
+    {
+        $config = $this->read('sites');
+
+        return isset($config[$site]) ? $config[$site] : null;
+    }
+
+    /**
+     * Ensure PHP exists
+     *
+     * @param string $php
+     * @return boolean
+     */
+    public function phpExists($php): bool
+    {
+        $config = $this->read('php');
+
+        return in_array($php, $config);
+    }
+
+    /**
      * Add PHP config
      *
      * @param string $php
