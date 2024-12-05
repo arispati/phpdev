@@ -30,4 +30,15 @@ class Site
         // return site name with TLD
         return sprintf('%s.%s', $name, PHPDEV_TLD);
     }
+
+    /**
+     * Get site path
+     *
+     * @param string|null $path
+     * @return string
+     */
+    public function path(?string $path = null): string
+    {
+        return rtrim(sprintf('%s/%s', PHPDEV_CURRENT_DIR_PATH, $path), '/');
+    }
 }

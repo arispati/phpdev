@@ -10,6 +10,7 @@ use PhpDev\Helper\Facade;
  * @method static string getVersion(?string $php = null)
  * @method static bool installed(string $version)
  * @method static void createConfigurationFiles(string $phpVersion)
+ * @method static void start(?string $phpVersion = null)
  *
  * @see \PhpDev\App\PhpFpm
  */

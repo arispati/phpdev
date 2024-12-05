@@ -10,7 +10,7 @@ class File
      * @param string $path
      * @return boolean
      */
-    public function isDir(string $path): bool
+    public static function isDir(string $path): bool
     {
         return is_dir($path);
     }
@@ -22,7 +22,7 @@ class File
      * @param integer $mode
      * @return never
      */
-    public function mkdir(string $path, int $mode = 0755): never
+    public static function mkdir(string $path, int $mode = 0755): never
     {
         mkdir($path, $mode, true);
     }
@@ -34,10 +34,10 @@ class File
      * @param integer $mode
      * @return never
      */
-    public function ensureDirExists(string $path, int $mode = 0755): never
+    public static function ensureDirExists(string $path, int $mode = 0755): never
     {
-        if (! $this->isDir($path)) {
-            $this->mkdir($path, $mode);
+        if (! self::isDir($path)) {
+            self::mkdir($path, $mode);
         }
     }
 
@@ -47,7 +47,7 @@ class File
      * @param string $path
      * @return boolean
      */
-    public function exists(string $path): bool
+    public static function exists(string $path): bool
     {
         return file_exists($path);
     }
@@ -58,7 +58,7 @@ class File
      * @param string $path
      * @return string
      */
-    public function get(string $path): string
+    public static function get(string $path): string
     {
         return file_get_contents($path);
     }
@@ -70,8 +70,21 @@ class File
      * @param string $contents
      * @return never
      */
-    public function put(string $path, string $contents): never
+    public static function put(string $path, string $contents): never
     {
         file_put_contents($path, $contents);
+    }
+
+    /**
+     * Get custom stub file if exists.
+     *
+     * @param string $filename
+     * @return string
+     */
+    public static function getStub(string $filename): string
+    {
+        $path = sprintf('%s/%s', PHPDEV_STUB_PATH, $filename);
+
+        return self::get($path);
     }
 }

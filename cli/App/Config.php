@@ -13,7 +13,6 @@ class Config
      * @param File $file
      */
     public function __construct(
-        protected File $file,
         protected PhpFpm $php
     ) {
         //
@@ -37,7 +36,7 @@ class Config
      */
     public function createConfigurationDirectory(): void
     {
-        $this->file->ensureDirExists(PHPDEV_HOME_PATH);
+        File::ensureDirExists(PHPDEV_HOME_PATH);
     }
 
     /**
@@ -47,7 +46,7 @@ class Config
      */
     public function ensureBaseConfiguration(): void
     {
-        if (! $this->file->exists($this->path())) {
+        if (! File::exists($this->path())) {
             $this->write([
                 'php' => [$this->php->getVersion()],
                 'sites' => []
@@ -63,11 +62,11 @@ class Config
      */
     public function read(?string $key = null): array
     {
-        if (! $this->file->exists($this->path())) {
+        if (! File::exists($this->path())) {
             $this->ensureBaseConfiguration();
         }
 
-        $config = json_decode($this->file->get($this->path()), true, 512, JSON_THROW_ON_ERROR);
+        $config = json_decode(File::get($this->path()), true, 512, JSON_THROW_ON_ERROR);
 
         return is_null($key) ? $config : $config[$key];
     }
@@ -82,8 +81,17 @@ class Config
     public function updateKey(string $key, mixed $value): array
     {
         return Helper::tab($this->read(), function (&$config) use ($key, $value) {
+            // sort value
+            if ($key == 'php') {
+                // descending sort
+                rsort($value);
+            } else {
+                // ascending sort by key
+                ksort($value);
+            }
+            // apply to config
             $config[$key] = $value;
-
+            // write configuration
             $this->write($config);
         });
     }
@@ -93,7 +101,7 @@ class Config
      */
     public function write(array $config): void
     {
-        $this->file->put($this->path(), json_encode(
+        File::put($this->path(), json_encode(
             $config,
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         ) . PHP_EOL);

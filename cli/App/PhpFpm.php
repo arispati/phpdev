@@ -12,15 +12,11 @@ class PhpFpm
      */
     public function __construct(
         protected Brew $brew,
-        protected File $file,
         protected Config $config
     ) {
         //
     }
 
-    /**
-     * start the PHP FPM process.
-     */
     /**
      * Start PHP FPM service
      *
@@ -88,7 +84,7 @@ class PhpFpm
 
         $fpmConfigFile = $this->fpmConfigPath($phpVersion);
 
-        $this->file->ensureDirExists(dirname($fpmConfigFile));
+        File::ensureDirExists(dirname($fpmConfigFile));
 
         // rename (to disable) old FPM Pool configuration
         $oldFile = dirname($fpmConfigFile) . '/www.conf';
@@ -101,10 +97,10 @@ class PhpFpm
         $contents = str_replace(
             ['PHPDEV_USER', 'PHPDEV_GROUP', 'PHPDEV_PHP_FPM_PATH', 'phpdev.sock'],
             [$user, $user, PHPDEV_HOME_PATH, $this->fpmSockName($phpVersion)],
-            $this->file->getStub('phpfpm.conf')
+            File::getStub('phpfpm.conf')
         );
         // Create FPM Config File from stub
-        $this->file->put($fpmConfigFile, $contents);
+        File::put($fpmConfigFile, $contents);
     }
 
     /**
@@ -125,14 +121,25 @@ class PhpFpm
     /**
      * Get FPM sock file name for a given PHP version.
      *
-     * @param string|null $phpVersion
+     * @param string $phpVersion
      * @return string
      */
-    public function fpmSockName(?string $phpVersion = null): string
+    public function fpmSockName(string $phpVersion): string
     {
         $versionInteger = preg_replace('~[^\d]~', '', $phpVersion);
 
         return sprintf('phpdev%s.sock', $versionInteger);
+    }
+
+    /**
+     * Get FPM sock file path for a given PHP version.
+     *
+     * @param string $phpVersion
+     * @return string
+     */
+    public function fpmSockPath(string $phpVersion): string
+    {
+        return sprintf(PHPDEV_HOME_PATH . '/%s', $this->fpmSockName($phpVersion));
     }
 
     /**
