@@ -23,7 +23,7 @@ fi
 # Get a command-line executable we can use for php that's 8+;
 if [[ "$PHP_EXECUTABLE" = "" ]]
 then
-    PHP="$(php $DIR/find-usable-php.php)"
+    PHP="$(php $DIR/lib/find-usable-php.php)"
 
     # Validate output before running it on the CLI
     if [[ ! -f "$PHP" ]]; then
@@ -40,10 +40,5 @@ fi
 
 # Finally, for every other command we will just proxy into the PHP tool
 # and let it handle the request.
-# if [[ "$EUID" -ne 0 ]]
-# then
-#     sudo USER="$USER" --preserve-env "$SOURCE" "$@"
-#     exit
-# fi
 
 "$PHP" "$DIR/cli/PhpDev.php" "$@"

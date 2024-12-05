@@ -4,8 +4,8 @@
     "license": "MIT",
     "autoload": {
         "files": [
-            "cli/includes/compatibility.php",
-            "cli/includes/helpers.php"
+            "lib/compatibility.php",
+            "lib/constant.php"
         ],
         "psr-4": {
             "PhpDev\\": "cli/"

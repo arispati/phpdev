@@ -1,5 +1,8 @@
 <?php
 
+// Minimum PHP version
+$minimumPhpVersion = '8.3';
+
 // Allow bypassing these checks if using PhpDev in a non-CLI app
 if (php_sapi_name() !== 'cli') {
     return;
@@ -25,8 +28,8 @@ if (PHP_OS !== 'Linux' && ! $inWslEnvironment && ! $inTestingEnvironment) {
     }
 }
 
-if (version_compare(PHP_VERSION, '7.4', '<')) {
-    echo 'PhpDev requires PHP 7.4 or later.' . PHP_EOL;
+if (version_compare(PHP_VERSION, $minimumPhpVersion, '<')) {
+    echo sprintf('PhpDev requires PHP %s or later.', $minimumPhpVersion) . PHP_EOL;
 
     exit(1);
 }
