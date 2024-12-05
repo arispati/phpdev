@@ -20,9 +20,9 @@ class File
      *
      * @param string $path
      * @param integer $mode
-     * @return never
+     * @return void
      */
-    public static function mkdir(string $path, int $mode = 0755): never
+    public static function mkdir(string $path, int $mode = 0755): void
     {
         mkdir($path, $mode, true);
     }
@@ -32,9 +32,9 @@ class File
      *
      * @param string $path
      * @param integer $mode
-     * @return never
+     * @return void
      */
-    public static function ensureDirExists(string $path, int $mode = 0755): never
+    public static function ensureDirExists(string $path, int $mode = 0755): void
     {
         if (! self::isDir($path)) {
             self::mkdir($path, $mode);
@@ -68,9 +68,9 @@ class File
      *
      * @param string $path
      * @param string $contents
-     * @return never
+     * @return void
      */
-    public static function put(string $path, string $contents): never
+    public static function put(string $path, string $contents): void
     {
         file_put_contents($path, $contents);
     }

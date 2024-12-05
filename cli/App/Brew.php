@@ -32,14 +32,17 @@ class Brew
 
     /**
      * Start the given Homebrew services
+     *
+     * @param string|array $services
+     * @return void
      */
-    public function startService(string $services): void
+    public function startService(string|array $services): void
     {
-        $services = is_array($services) ? $services : func_get_args();
+        $services = is_array($services) ? $services : [$services];
 
         foreach ($services as $service) {
             if ($this->installed($service)) {
-                Helper::info("Starting {$service}...");
+                Helper::info("Starting {$service}");
                 // start service
                 Cli::quietly('brew services start ' . $service);
             }
@@ -49,16 +52,16 @@ class Brew
     /**
      * Stop the given Homebrew services
      *
-     * @param string $services
+     * @param string|array $services
      * @return void
      */
-    public function stopService(string $services): void
+    public function stopService(string|array $services): void
     {
-        $services = is_array($services) ? $services : func_get_args();
+        $services = is_array($services) ? $services : [$services];
 
         foreach ($services as $service) {
             if ($this->installed($service)) {
-                Helper::info("Stopping {$service}...");
+                Helper::info("Stopping {$service}");
                 // stop service
                 Cli::quietly('brew services stop ' . $service);
             }
@@ -77,7 +80,7 @@ class Brew
 
         foreach ($services as $service) {
             if ($this->installed($service)) {
-                Helper::info("Restarting {$service}...");
+                Helper::info("Restarting {$service}");
                 // restart service
                 Cli::quietly('brew services restart ' . $service);
             }

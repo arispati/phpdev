@@ -25,11 +25,30 @@ class PhpFpm
      */
     public function start(?string $phpVersion = null): void
     {
-        Helper::info('Starting phpfpm...');
+        Helper::info('Starting PHP FPM');
         // get services
         $services = is_null($phpVersion) ? $this->utilizedPhpVersions() : $this->serviceName($phpVersion);
         // start services
         $this->brew->startService($services);
+    }
+
+    /**
+     * Stop PHP FPM service
+     *
+     * @param string|array $phpVersion
+     * @return void
+     */
+    public function stop(string|array $phpVersion): void
+    {
+        Helper::info('Stopping PHP FPM');
+        // wrap to array
+        $phps = is_array($phpVersion) ? $phpVersion : [$phpVersion];
+        // get services
+        $services = array_map(function ($php) {
+            return $this->serviceName($php);
+        }, $phps);
+        // stop services
+        $this->brew->stopService($services);
     }
 
     /**
@@ -80,7 +99,7 @@ class PhpFpm
      */
     public function createConfigurationFiles(string $phpVersion): void
     {
-        Helper::info("Updating PHP configuration for {$phpVersion}...");
+        Helper::info("Updating PHP configuration for {$phpVersion}");
 
         $fpmConfigFile = $this->fpmConfigPath($phpVersion);
 

@@ -26,7 +26,7 @@ class Nginx
      */
     public function restart(): void
     {
-        Helper::info('Restarting nginx service...');
+        Helper::info('Restarting nginx service');
         // run command
         Cli::runCommand('sudo service nginx restart');
     }
@@ -38,7 +38,7 @@ class Nginx
      */
     public function start(): void
     {
-        Helper::info('Starting nginx...');
+        Helper::info('Starting nginx');
         // run command
         Cli::runCommand('sudo service nginx start');
     }
@@ -50,7 +50,7 @@ class Nginx
      */
     public function stop(): void
     {
-        Helper::info('Stopping nginx...');
+        Helper::info('Stopping nginx');
         // run command
         Cli::runCommand('sudo service nginx stop');
     }
@@ -78,5 +78,20 @@ class Nginx
         Cli::runCommand(sprintf('sudo touch %s', $siteConfigPath));
         // write site configuration
         Cli::runCommand("echo '$siteConfig' | sudo tee $siteConfigPath");
+    }
+
+    /**
+     * Remove site configuration
+     *
+     * @param string $site
+     * @return void
+     */
+    public function removeConfiguration(string $site): void
+    {
+        Helper::info(sprintf('Removing %s configuration', $site));
+        // site configuration path
+        $siteConfigPath = sprintf('%s/%s', PHPDEV_NGINX_SITE_PATH, $site);
+        // remove site configuration
+        Cli::runCommand(sprintf('sudo rm %s', $siteConfigPath));
     }
 }

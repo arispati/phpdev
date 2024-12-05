@@ -19,6 +19,122 @@ class Config
     }
 
     /**
+     * Add PHP config
+     *
+     * @param string $php
+     * @return void
+     */
+    public function addPhp(string $php): void
+    {
+        // get php config
+        $config = $this->read('php');
+        // add new config
+        $newConfig = array_merge($config, [$php]);
+        // desc sort config
+        rsort($newConfig);
+        // update config
+        $this->updateKey('php', $newConfig);
+    }
+
+    /**
+     * Remove PHP config
+     *
+     * @param string|array $php
+     * @return void
+     */
+    public function removePhp(string|array $php): void
+    {
+        // get php config
+        $config = $this->read('php');
+        // wrap to array
+        $php = is_array($php) ? $php : [$php];
+        // iterate php
+        foreach ($php as $item) {
+            // search php
+            $index = array_search($item, $config);
+            // remove config
+            if ($index !== false) {
+                unset($config[$index]);
+            }
+        }
+        // desc sort config
+        rsort($config);
+        // update config
+        $this->updateKey('php', $config);
+    }
+
+    /**
+     * Synchronize PHP config with the sites
+     *
+     * @return array List of unused php version
+     */
+    public function synchPhp(): array
+    {
+        $unused = [];
+        // get config
+        $config = $this->read();
+        // iterate available php
+        foreach ($config['php'] as $php) {
+            $sites = array_filter($config['sites'], function ($item) use ($php) {
+                return $item['php'] == $php;
+            });
+            // validate the filtered sites
+            if (empty($sites)) {
+                $unused[] = $php;
+            }
+        }
+        // update config if found unused php version
+        if (! empty($unused)) {
+            $this->removePhp($unused);
+        }
+        // return unused php version
+        return $unused;
+    }
+
+    /**
+     * Add site
+     *
+     * @param string $type
+     * @param string $site
+     * @param string $path
+     * @param string|null $php
+     * @return void
+     */
+    public function addSite(string $type, string $site, string $path, ?string $php = null): void
+    {
+        // get sites config
+        $config = $this->read('sites');
+        // add new config
+        $config[$site] = [
+            'name' => $site,
+            'path' => $path,
+            'type' => $type,
+            'php' => $php ?? '-'
+        ];
+        // update config
+        $this->updateKey('sites', $config);
+    }
+
+    /**
+     * Remove site
+     *
+     * @param string $site
+     * @return void
+     */
+    public function removeSite(string $site): void
+    {
+        // get sites config
+        $config = $this->read('sites');
+        // validate site
+        if (isset($config[$site])) {
+            // remove site
+            unset($config[$site]);
+            // update config
+            $this->updateKey('sites', $config);
+        }
+    }
+
+    /**
      * Create the Valet configuration directory.
      *
      * @return void
@@ -70,14 +186,6 @@ class Config
     public function updateKey(string $key, mixed $value): array
     {
         return Helper::tab($this->read(), function (&$config) use ($key, $value) {
-            // sort value
-            if ($key == 'php') {
-                // descending sort
-                rsort($value);
-            } else {
-                // ascending sort by key
-                ksort($value);
-            }
             // apply to config
             $config[$key] = $value;
             // write configuration
