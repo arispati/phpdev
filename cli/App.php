@@ -30,17 +30,54 @@ $app = new Application('PhpDev', $version);
  * Register commands
  */
 
-// link command
+// Start the PhpDev services.
+$app->command('start', function () {
+    Helper::info(PHP_EOL . 'Starting PhpDev services');
+    Helper::write();
+    // start php fpm
+    PhpFpm::start();
+    Helper::write();
+    // start nginx
+    Nginx::start();
+
+    Helper::info(PHP_EOL . 'All PhpDev services have been started.');
+})->descriptions('start PhpDev services');
+
+// Stop the PhpDev services.
+$app->command('stop', function () {
+    Helper::info(PHP_EOL . 'Stopping PhpDev services');
+    Helper::write();
+    // stop nginx
+    Nginx::stop();
+    Helper::write();
+    // stop php fpm
+    PhpFpm::stop();
+
+    Helper::info(PHP_EOL . 'PhpDev services have been stopped.');
+})->descriptions('Stop PhpDev services');
+
+// Restart the PhpDev services.
+$app->command('restart', function () {
+    Helper::info(PHP_EOL . 'Restart PhpDev service');
+    Helper::write();
+    // restart PHP FPM
+    PhpFpm::restart();
+    Helper::write();
+    // restart nginx
+    Nginx::restart();
+
+    Helper::info(PHP_EOL . 'PhpDev services has been restarted');
+})->descriptions('Restart PhpDev services');
+
+// Link site to PhpDev
 $app->command('link [path] [-s|--site=] [-p|--php=]', function ($path, $site, $php) {
     // define variable
     $path = Site::path($path);
     $config = Config::read();
     $site = Site::name($site);
-    Helper::info(sprintf('Linking %s', $site));
-    Helper::write();
     // validate site
     if (isset($config['sites'][$site])) {
-        Helper::write('Site name already linked');
+        Helper::write(PHP_EOL . 'Site name already linked');
         // exit command
         return Command::FAILURE;
     }
@@ -48,34 +85,35 @@ $app->command('link [path] [-s|--site=] [-p|--php=]', function ($path, $site, $p
     $php = PhpFpm::getVersion($php);
     // validate php version installed
     if (! PhpFpm::installed($php)) {
-        Helper::write('Error:');
-        Helper::warning(sprintf('PHP %s not installed yet', $php));
+        Helper::warning(PHP_EOL . 'Error:');
+        Helper::write(sprintf('PHP %s not installed yet', $php));
         // exit command
         return Command::FAILURE;
     }
-    // validate php configuration
-    if (! in_array($php, $config['php'])) {
-        PhpFpm::createConfigurationFiles($php);
-        // add php version to config
-        Config::addPhp($php);
-        // start php fpm
-        PhpFpm::start($php);
-    }
+    Helper::info(sprintf(PHP_EOL . 'Linking %s', $site));
+    Helper::write();
     // create nginx configuration
     Nginx::createConfiguration($site, $path, $php);
     // restart nginx
     Nginx::restart();
+    // validate php configuration
+    if (! in_array($php, $config['php'])) {
+        Helper::write();
+        PhpFpm::createConfigurationFiles($php);
+        // start php fpm
+        PhpFpm::start($php);
+    }
     // add site to config
     Config::addSite('link', $site, $path, $php);
 
-    Helper::info(PHP_EOL . sprintf('%s successfully linked', $site));
+    Helper::info(PHP_EOL . sprintf('%s has been linked', $site));
 })->descriptions('Link the current working directory to PhpDev', [
     'path' => 'Root directory path for the site. Default: current directory path',
     '--site' => 'Site name. Default: current directory name',
     '--php' => 'Which php version to use. Default: current php version'
 ]);
 
-// show linked site
+// Show linked site
 $app->command('links', function () {
     $headers = ['name', 'type', 'php', 'path'];
     $sites = array_map(function ($item) use ($headers) {
@@ -93,6 +131,7 @@ $app->command('links', function () {
     Helper::table($headers, array_values($sites));
 })->descriptions('Show all linked sites');
 
+// Unlink site
 $app->command('unlink site', function ($site) {
     // define variable
     $site = Site::name($site);
@@ -105,17 +144,17 @@ $app->command('unlink site', function ($site) {
     Helper::info(sprintf('Unlinking %s', $site));
     Helper::write();
     // remove site config
-    Config::removeSite($site);
-    // synch PHP FPM
-    if ($unused = Config::synchPhp()) {
-        PhpFpm::stop($unused);
-    }
-    // new line
-    Helper::write();
-    // remove site config
     Nginx::removeConfiguration($site);
     // restart nginx
     Nginx::restart();
+    // remove site config
+    Config::removeSite($site);
+    // synch PHP FPM
+    if ($unused = Config::synchPhp()) {
+        Helper::info(PHP_EOL . 'There is an unused PHP FPM');
+        // new line
+        PhpFpm::stop($unused);
+    }
 
     Helper::info(PHP_EOL . sprintf('%s successfully unlinked', $site));
 })->descriptions('Unlink site');

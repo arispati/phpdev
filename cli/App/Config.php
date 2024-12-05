@@ -28,12 +28,15 @@ class Config
     {
         // get php config
         $config = $this->read('php');
-        // add new config
-        $newConfig = array_merge($config, [$php]);
-        // desc sort config
-        rsort($newConfig);
-        // update config
-        $this->updateKey('php', $newConfig);
+        // validate php version
+        if (array_search($php, $config) === false) {
+            // add new config
+            $newConfig = array_merge($config, [$php]);
+            // desc sort config
+            rsort($newConfig);
+            // update config
+            $this->updateKey('php', $newConfig);
+        }
     }
 
     /**
@@ -113,6 +116,10 @@ class Config
         ];
         // update config
         $this->updateKey('sites', $config);
+        // add php version to config
+        if (! empty($php)) {
+            $this->addPhp($php);
+        }
     }
 
     /**

@@ -35,13 +35,14 @@ class PhpFpm
     /**
      * Stop PHP FPM service
      *
-     * @param string|array $phpVersion
+     * @param string|array|null $phpVersion
      * @return void
      */
-    public function stop(string|array $phpVersion): void
+    public function stop(string|array|null $phpVersion = null): void
     {
         Helper::info('Stopping PHP FPM');
         // wrap to array
+        $phpVersion = is_null($phpVersion) ? $this->utilizedPhpVersions() : $phpVersion;
         $phps = is_array($phpVersion) ? $phpVersion : [$phpVersion];
         // get services
         $services = array_map(function ($php) {
@@ -49,6 +50,26 @@ class PhpFpm
         }, $phps);
         // stop services
         $this->brew->stopService($services);
+    }
+
+    /**
+     * Restart PHP FPM service
+     *
+     * @param string|array|null $phpVersion
+     * @return void
+     */
+    public function restart(string|array|null $phpVersion = null): void
+    {
+        Helper::info('Restarting PHP FPM');
+        // wrap to array
+        $phpVersion = is_null($phpVersion) ? $this->utilizedPhpVersions() : $phpVersion;
+        $phps = is_array($phpVersion) ? $phpVersion : [$phpVersion];
+        // get services
+        $services = array_map(function ($php) {
+            return $this->serviceName($php);
+        }, $phps);
+        // stop services
+        $this->brew->restartService($services);
     }
 
     /**
@@ -88,6 +109,10 @@ class PhpFpm
      */
     public function serviceName(string $version): string
     {
+        if (Helper::startWith($version, 'php@')) {
+            return $version;
+        }
+
         return sprintf('php@%s', $version);
     }
 

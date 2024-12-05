@@ -71,12 +71,12 @@ class Brew
     /**
      * Restart the given Homebrew services
      *
-     * @param string $services
+     * @param string|array $services
      * @return void
      */
-    public function restartService(string $services): void
+    public function restartService(string|array $services): void
     {
-        $services = is_array($services) ? $services : func_get_args();
+        $services = is_array($services) ? $services : [$services];
 
         foreach ($services as $service) {
             if ($this->installed($service)) {
