@@ -1,14 +1,14 @@
 <?php
 
-namespace PhpDev\App;
+namespace PhpDevBackup\App;
 
-use PhpDev\Tools\CommandLine;
-use PhpDev\Tools\Filesystem;
+use PhpDevBackup\Tools\CommandLine;
+use PhpDevBackup\Tools\Filesystem;
 use DomainException;
 use Illuminate\Support\Collection;
 
-use function PhpDev\info;
-use function PhpDev\starts_with;
+use function PhpDevBackup\info;
+use function PhpDevBackup\starts_with;
 
 class Brew
 {

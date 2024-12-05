@@ -11,7 +11,7 @@ class Facade
      */
     public static function containerKey(): string
     {
-        return 'PhpDev\\App\\' . basename(str_replace('\\', '/', get_called_class()));
+        return 'PhpDevBackup\\App\\' . basename(str_replace('\\', '/', get_called_class()));
     }
 
     /**

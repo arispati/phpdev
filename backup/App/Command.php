@@ -1,12 +1,12 @@
 <?php
 
-namespace PhpDev\App;
+namespace PhpDevBackup\App;
 
-use PhpDev\Tools\Filesystem;
+use PhpDevBackup\Tools\Filesystem;
 use Silly\Command\Command as SillyCommand;
 
-use function PhpDev\output;
-use function PhpDev\warning;
+use function PhpDevBackup\output;
+use function PhpDevBackup\warning;
 
 class Command
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace PhpDev\Facades;
+namespace PhpDevBackup\Facades;
 
-use PhpDev\Facade;
+use PhpDevBackup\Facade;
 
 class Configuration extends Facade
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpDev\Tools;
+namespace PhpDevBackup\Tools;
 
 use Symfony\Component\Process\Process;
 

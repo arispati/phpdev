@@ -20,11 +20,9 @@ class Helper
         // if writer abstract not bounded yet
         if (! $container->bound('writer')) {
             // register to the container
-            echo '!bound' . PHP_EOL;
             $container->instance('writer', new ConsoleOutput());
         }
         // resolve abstract
-        echo 'make' . PHP_EOL;
         return $container->make('writer');
     }
 
@@ -76,5 +74,55 @@ class Helper
         $table->setHeaders($headers)->setRows($rows);
         // render the table
         $table->render();
+    }
+
+    /**
+     * Tab the given value
+     *
+     * @param mixed $value
+     * @param callable $callback
+     * @return mixed
+     */
+    public static function tab(mixed $value, callable $callback): mixed
+    {
+        $callback($value);
+
+        return $value;
+    }
+
+    /**
+     * Determine if a given string end with a given substring.
+     *
+     * @param string $haystack
+     * @param array|string $needles
+     * @return boolean
+     */
+    public static function endWith(string $haystack, array|string $needles): bool
+    {
+        foreach ((array) $needles as $needle) {
+            if (substr($haystack, -strlen($needle)) === (string) $needle) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if a given string start with a given substring.
+     *
+     * @param string $haystack
+     * @param array|string $needles
+     * @return boolean
+     */
+    public static function startWith(string $haystack, array|string $needles): bool
+    {
+        foreach ((array) $needles as $needle) {
+            if ((string) $needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

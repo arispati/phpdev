@@ -1,8 +1,8 @@
 <?php
 
-namespace PhpDev\Facades;
+namespace PhpDevBackup\Facades;
 
-use PhpDev\Facade;
+use PhpDevBackup\Facade;
 
 class Command extends Facade
 {

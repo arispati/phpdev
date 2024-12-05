@@ -1,12 +1,12 @@
 <?php
 
-namespace PhpDev\App;
+namespace PhpDevBackup\App;
 
-use PhpDev\Tools\CommandLine;
-use PhpDev\Tools\Filesystem;
+use PhpDevBackup\Tools\CommandLine;
+use PhpDevBackup\Tools\Filesystem;
 
-use function PhpDev\info;
-use function PhpDev\user;
+use function PhpDevBackup\info;
+use function PhpDevBackup\user;
 
 class Nginx
 {

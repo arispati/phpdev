@@ -1,10 +1,8 @@
 <?php
 
-namespace PhpDevBackup\App;
+namespace PhpDev\App;
 
-use PhpDevBackup\Facades\Configuration;
-
-use function PhpDevBackup\ends_with;
+use PhpDev\Helper\Helper;
 
 class Site
 {
@@ -14,7 +12,7 @@ class Site
      * @param string|null $name
      * @return string
      */
-    public function name(?string $name): string
+    public function name(?string $name = null): string
     {
         // is name already given
         if (! empty($name)) {
@@ -26,15 +24,10 @@ class Site
         site_name:
         // normalized site name
         $tld = sprintf('.%s', PHPDEV_TLD);
-        if (ends_with($name, $tld)) {
+        if (Helper::endWith($name, $tld)) {
             $name = substr($name, 0, -strlen($tld));
         }
         // return site name with TLD
         return sprintf('%s.%s', $name, PHPDEV_TLD);
-    }
-
-    public function links()
-    {
-        $sites = Configuration::read('sites');
     }
 }

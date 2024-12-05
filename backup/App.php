@@ -1,17 +1,17 @@
 <?php
 
 use Illuminate\Container\Container;
-use PhpDev\Facades\Configuration;
-use PhpDev\Facades\PhpFpm;
-use PhpDev\Facades\Nginx;
-use PhpDev\Facades\Site;
+use PhpDevBackup\Facades\Configuration;
+use PhpDevBackup\Facades\PhpFpm;
+use PhpDevBackup\Facades\Nginx;
+use PhpDevBackup\Facades\Site;
 use Silly\Application;
 use Silly\Command\Command;
 
-use function PhpDev\info;
-use function PhpDev\output;
-use function PhpDev\table;
-use function PhpDev\warning;
+use function PhpDevBackup\info;
+use function PhpDevBackup\output;
+use function PhpDevBackup\table;
+use function PhpDevBackup\warning;
 
 // Load correct autoloader depending on install location.
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {

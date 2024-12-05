@@ -1,12 +1,9 @@
 <?php
 
-namespace PhpDevBackup\App;
+namespace PhpDev\App;
 
-use PhpDevBackup\Facades\Configuration;
-use PhpDevBackup\Tools\Filesystem;
-
-use function PhpDevBackup\info;
-use function PhpDevBackup\user;
+use PhpDev\Helper\File;
+use PhpDev\Helper\Helper;
 
 class PhpFpm
 {
@@ -15,65 +12,28 @@ class PhpFpm
      */
     public function __construct(
         protected Brew $brew,
-        protected Filesystem $file
+        protected File $file,
+        protected Config $config
     ) {
         //
     }
 
     /**
-     * Get service name
-     *
-     * @param string $version
-     * @return string
-     */
-    public function serviceName(string $version): string
-    {
-        return sprintf('php@%s', $version);
-    }
-
-    /**
-     * Install and configure PhpFpm.
-     */
-    public function install(): void
-    {
-        info('Installing and configuring phpfpm...');
-
-        $this->createConfigurationFiles($this->getVersion());
-
-        $this->restart();
-    }
-
-    /**
      * start the PHP FPM process.
+     */
+    /**
+     * Start PHP FPM service
+     *
+     * @param string|null $phpVersion
+     * @return void
      */
     public function start(?string $phpVersion = null): void
     {
-        info('Starting phpfpm...');
+        Helper::info('Starting phpfpm...');
         // get services
         $services = is_null($phpVersion) ? $this->utilizedPhpVersions() : $this->serviceName($phpVersion);
         // start services
         $this->brew->startService($services);
-    }
-
-    /**
-     * Stop the PHP FPM process.
-     */
-    public function stop(): void
-    {
-        info('Stopping phpfpm...');
-        // stop service
-        $this->brew->stopService($this->utilizedPhpVersions());
-    }
-
-    /**
-     * Restart the PHP FPM process (if one specified) or processes (if none specified).
-     */
-    public function restart(?string $phpVersion = null): void
-    {
-        // get services
-        $services = is_null($phpVersion) ? $this->utilizedPhpVersions() : $this->serviceName($phpVersion);
-        // restart service
-        $this->brew->restartService($services);
     }
 
     /**
@@ -86,12 +46,12 @@ class PhpFpm
     {
         // if empty, use current php version
         if (empty($php)) {
-            return sprintf('%s.%s', PHP_MAJOR_VERSION, PHP_MINOR_VERSION);
+            return PHPDEV_PHP_VERSION;
         }
         // parse the given php version
-        $version = explode('.', $php);
+        [$major, $minor] = explode('.', $php);
         // return php version
-        return sprintf('%s.%s', $version[0], $version[1] ?? 0);
+        return sprintf('%s.%s', $major, $minor ?? 0);
     }
 
     /**
@@ -106,17 +66,29 @@ class PhpFpm
     }
 
     /**
+     * Get service name
+     *
+     * @param string $version
+     * @return string
+     */
+    public function serviceName(string $version): string
+    {
+        return sprintf('php@%s', $version);
+    }
+
+    /**
      * Create (or re-create) the PHP FPM configuration files.
      *
-     * Writes FPM config file, pointing to the correct .sock file, and log and ini files.
+     * @param string $phpVersion
+     * @return void
      */
     public function createConfigurationFiles(string $phpVersion): void
     {
-        info("Updating PHP configuration for {$phpVersion}...");
+        Helper::info("Updating PHP configuration for {$phpVersion}...");
 
         $fpmConfigFile = $this->fpmConfigPath($phpVersion);
 
-        $this->file->ensureDirExists(dirname($fpmConfigFile), user());
+        $this->file->ensureDirExists(dirname($fpmConfigFile));
 
         // rename (to disable) old FPM Pool configuration
         $oldFile = dirname($fpmConfigFile) . '/www.conf';
@@ -124,17 +96,22 @@ class PhpFpm
             rename($oldFile, $oldFile . '-phpdev-backup');
         }
 
-        // Create FPM Config File from stub
+        // parsing stub
+        $user = PHPDEV_USER;
         $contents = str_replace(
             ['PHPDEV_USER', 'PHPDEV_GROUP', 'PHPDEV_PHP_FPM_PATH', 'phpdev.sock'],
-            [user(), user(), PHPDEV_HOME_PATH, $this->fpmSockName($phpVersion)],
+            [$user, $user, PHPDEV_HOME_PATH, $this->fpmSockName($phpVersion)],
             $this->file->getStub('phpfpm.conf')
         );
+        // Create FPM Config File from stub
         $this->file->put($fpmConfigFile, $contents);
     }
 
     /**
      * Get the path to the FPM configuration file for the current PHP version.
+     *
+     * @param string $phpVersion
+     * @return string
      */
     public function fpmConfigPath(string $phpVersion): string
     {
@@ -147,6 +124,9 @@ class PhpFpm
 
     /**
      * Get FPM sock file name for a given PHP version.
+     *
+     * @param string|null $phpVersion
+     * @return string
      */
     public function fpmSockName(?string $phpVersion = null): string
     {
@@ -156,20 +136,13 @@ class PhpFpm
     }
 
     /**
-     * Get FPM sock file path for a given PHP version.
+     * Utilized used PHP versions
+     *
+     * @return array
      */
-    public function fpmSockPath(?string $phpVersion = null): string
-    {
-        if (is_null($phpVersion)) {
-            $phpVersion = $this->getVersion();
-        }
-
-        return sprintf(PHPDEV_HOME_PATH . '/%s', $this->fpmSockName($phpVersion));
-    }
-
     public function utilizedPhpVersions(): array
     {
-        $config = Configuration::read();
+        $config = $this->config->read();
 
         return array_map(function ($phpVersion) {
             return $this->serviceName($phpVersion);

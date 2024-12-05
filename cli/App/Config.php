@@ -1,22 +1,30 @@
 <?php
 
-namespace PhpDevBackup\App;
+namespace PhpDev\App;
 
-use PhpDevBackup\Tools\Filesystem;
+use PhpDev\Helper\File;
+use PhpDev\Helper\Helper;
 
-use function PhpDevBackup\tap;
-use function PhpDevBackup\user;
-
-class Configuration
+class Config
 {
+    /**
+     * Class constructor
+     *
+     * @param File $file
+     */
     public function __construct(
-        protected Filesystem $file,
+        protected File $file,
         protected PhpFpm $php
     ) {
         //
     }
 
-    public function install()
+    /**
+     * Initiate configuration
+     *
+     * @return void
+     */
+    public function init(): void
     {
         $this->createConfigurationDirectory();
         $this->ensureBaseConfiguration();
@@ -24,14 +32,18 @@ class Configuration
 
     /**
      * Create the Valet configuration directory.
+     *
+     * @return void
      */
     public function createConfigurationDirectory(): void
     {
-        $this->file->ensureDirExists(PHPDEV_HOME_PATH, user());
+        $this->file->ensureDirExists(PHPDEV_HOME_PATH);
     }
 
     /**
      * Ensure the base initial configuration has been installed.
+     *
+     * @return void
      */
     public function ensureBaseConfiguration(): void
     {
@@ -45,6 +57,9 @@ class Configuration
 
     /**
      * Read the configuration file as JSON.
+     *
+     * @param string|null $key
+     * @return array
      */
     public function read(?string $key = null): array
     {
@@ -59,10 +74,14 @@ class Configuration
 
     /**
      * Update a specific key in the configuration file.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return array
      */
     public function updateKey(string $key, mixed $value): array
     {
-        return tap($this->read(), function (&$config) use ($key, $value) {
+        return Helper::tab($this->read(), function (&$config) use ($key, $value) {
             $config[$key] = $value;
 
             $this->write($config);
@@ -74,7 +93,7 @@ class Configuration
      */
     public function write(array $config): void
     {
-        $this->file->putAsUser($this->path(), json_encode(
+        $this->file->put($this->path(), json_encode(
             $config,
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         ) . PHP_EOL);
@@ -82,6 +101,8 @@ class Configuration
 
     /**
      * Get the configuration file path.
+     *
+     * @return string
      */
     public function path(): string
     {

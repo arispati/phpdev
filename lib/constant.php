@@ -25,6 +25,16 @@ if (! defined('PHPDEV_USER')) {
     define('PHPDEV_USER', exec('whoami'));
 }
 
+// Stubs path
+if (! defined('PHPDEV_STUB_PATH')) {
+    define('PHPDEV_STUB_PATH', __DIR__ . '/../stubs');
+}
+
+// Current PHP version
+if (! defined('PHPDEV_PHP_VERSION')) {
+    define('PHPDEV_PHP_VERSION', sprintf('%s.%s', PHP_MAJOR_VERSION, PHP_MINOR_VERSION));
+}
+
 // Brew path
 if (! defined('PHPDEV_BREW_PATH')) {
     define('PHPDEV_BREW_PATH', exec('brew --prefix'));
@@ -43,9 +53,4 @@ if (! defined('PHPDEV_NGINX_CONF_PATH')) {
 // Nginx site path
 if (! defined('PHPDEV_NGINX_SITE_PATH')) {
     define('PHPDEV_NGINX_SITE_PATH', '/etc/nginx/sites-enabled');
-}
-
-// Stubs path
-if (! defined('PHPDEV_STUB_PATH')) {
-    define('PHPDEV_STUB_PATH', __DIR__ . '/../stubs');
 }

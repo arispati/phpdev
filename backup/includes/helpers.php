@@ -2,7 +2,7 @@
 
 namespace PhpDev;
 
-use PhpDev\Tools\CommandLine;
+use PhpDevBackup\Tools\CommandLine;
 use Illuminate\Container\Container;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
