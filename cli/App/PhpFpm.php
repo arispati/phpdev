@@ -25,7 +25,6 @@ class PhpFpm
     public function install(): void
     {
         Helper::info('Installing and configuring PHP FPM');
-        Helper::write();
         // define variable
         $phpConfig = $this->config->read('php');
         $currentPhp = $this->getVersion();
@@ -162,7 +161,7 @@ class PhpFpm
      */
     public function createConfigurationFiles(string $phpVersion): void
     {
-        Helper::info("Updating PHP configuration for {$phpVersion}");
+        Helper::info("Updating PHP {$phpVersion} configuration");
 
         $fpmConfigFile = $this->fpmConfigPath($phpVersion);
 
@@ -183,6 +182,27 @@ class PhpFpm
         );
         // Create FPM Config File from stub
         File::put($fpmConfigFile, $contents);
+
+        // Create other config files from stubs
+        $destDir = dirname(dirname($fpmConfigFile)) . '/conf.d';
+        File::ensureDirExists($destDir);
+
+        File::put(
+            $destDir . '/php-memory-limits.ini',
+            File::getStub('php-memory-limits.ini')
+        );
+
+        $logFileName = sprintf('php%s-fpm.log', preg_replace('~[^\d]~', '', $phpVersion));
+        $contents = str_replace(
+            ['PHPDEV_HOME_PATH', 'PHPDEV_PHP_FPM_LOG'],
+            [PHPDEV_HOME_PATH, $logFileName],
+            File::getStub('phpfpm-error-log.ini')
+        );
+        File::put($destDir . '/error_log.ini', $contents);
+
+        // Create log directory and file
+        File::ensureDirExists(PHPDEV_HOME_PATH . '/log/php-fpm');
+        File::touch(sprintf('%s/log/php-fpm/%s', PHPDEV_HOME_PATH, $logFileName));
     }
 
     /**

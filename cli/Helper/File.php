@@ -5,7 +5,18 @@ namespace PhpDev\Helper;
 class File
 {
     /**
-     * Determine if the given path is a directory.
+     * Touch the given path
+     *
+     * @param string $path
+     * @return void
+     */
+    public static function touch(string $path): void
+    {
+        touch($path);
+    }
+
+    /**
+     * Determine if the given path is a directory
      *
      * @param string $path
      * @return boolean
@@ -16,7 +27,7 @@ class File
     }
 
     /**
-     * Create a directory.
+     * Create a directory
      *
      * @param string $path
      * @param integer $mode
@@ -28,7 +39,7 @@ class File
     }
 
     /**
-     * Ensure that the given directory exists.
+     * Ensure that the given directory exists
      *
      * @param string $path
      * @param integer $mode
@@ -42,7 +53,7 @@ class File
     }
 
     /**
-     * Determine if the given file exists.
+     * Determine if the given file exists
      *
      * @param string $path
      * @return boolean
@@ -53,7 +64,7 @@ class File
     }
 
     /**
-     * Read the contents of the given file.
+     * Read the contents of the given file
      *
      * @param string $path
      * @return string
@@ -64,7 +75,7 @@ class File
     }
 
     /**
-     * Write to the given file.
+     * Write to the given file
      *
      * @param string $path
      * @param string $contents
@@ -76,7 +87,20 @@ class File
     }
 
     /**
-     * Get custom stub file if exists.
+     * Delete the file at the given path
+     *
+     * @param string $path
+     * @return void
+     */
+    public static function unlink(string $path): void
+    {
+        if (file_exists($path) || is_link($path)) {
+            @unlink($path);
+        }
+    }
+
+    /**
+     * Get custom stub file if exists
      *
      * @param string $filename
      * @return string
