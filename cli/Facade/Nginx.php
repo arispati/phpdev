@@ -7,6 +7,7 @@ use PhpDev\Helper\Facade;
 /**
  * Nginx facade
  *
+ * @method static void install()
  * @method static void start()
  * @method static void stop()
  * @method static void restart()

@@ -8,6 +8,8 @@ use PhpDev\Helper\Helper;
 
 class Nginx
 {
+    public const NGINX_DEFAULT_SITE = '/etc/nginx/sites-enabled/default';
+
     /**
      * Class constructor
      *
@@ -17,6 +19,66 @@ class Nginx
         protected PhpFpm $php
     ) {
         //
+    }
+
+    /**
+     * Install and configure Nginx.
+     *
+     * @return void
+     */
+    public function install(): void
+    {
+        $this->installConfiguration();
+
+        $this->restart();
+    }
+
+    /**
+     * Create (or re-create) the Nginx configuration files
+     *
+     * @return void
+     */
+    public function installConfiguration(): void
+    {
+        Helper::info('Installing nginx configuration...');
+
+        // backup original conf
+        if (! file_exists(PHPDEV_NGINX_CONF_PATH . '-phpdev-backup')) {
+            Cli::runCommand(sprintf(
+                'sudo mv %s %s',
+                PHPDEV_NGINX_CONF_PATH,
+                PHPDEV_NGINX_CONF_PATH . '-phpdev-backup'
+            ));
+        }
+
+        $contents = str_replace(
+            'PHPDEV_USER',
+            PHPDEV_USER,
+            file::getStub('nginx.conf')
+        );
+
+        Cli::runCommand('sudo touch ' . PHPDEV_NGINX_CONF_PATH);
+
+        Cli::runCommand(
+            "echo '$contents' | sudo tee " . PHPDEV_NGINX_CONF_PATH
+        );
+
+        // configure default host
+        $defaultConfig = str_replace(
+            ['PHPDEV_SERVER_NAME', 'PHPDEV_SERVER_ROOT_DIR', 'PHPDEV_PHP_FPM'],
+            ['localhost', '/var/www/html', $this->php->fpmSockPath($this->php->getVersion())],
+            File::getStub('site.conf')
+        );
+
+        Cli::runCommand(sprintf(
+            'sudo rm %s && touch %s',
+            self::NGINX_DEFAULT_SITE,
+            self::NGINX_DEFAULT_SITE
+        ));
+
+        Cli::runCommand(
+            "echo '$defaultConfig' | sudo tee " . self::NGINX_DEFAULT_SITE
+        );
     }
 
     /**

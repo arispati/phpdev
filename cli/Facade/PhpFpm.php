@@ -7,6 +7,7 @@ use PhpDev\Helper\Facade;
 /**
  * PHP FPM facade
  *
+ * @method static void install()
  * @method static string getVersion(?string $php = null)
  * @method static bool installed(string $version)
  * @method static void createConfigurationFiles(string $phpVersion)

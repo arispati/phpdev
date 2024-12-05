@@ -21,7 +21,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 Container::setInstance(new Container());
 
 // Version
-$version = '0.1.0';
+$version = '1.0.0';
 
 // Create application
 $app = new Application('PhpDev', $version);
@@ -30,15 +30,29 @@ $app = new Application('PhpDev', $version);
  * Register commands
  */
 
+$app->command('install', function () {
+    Helper::info(PHP_EOL . 'Installing PhpDev services');
+    Helper::write();
+    // init config
+    Config::init();
+    // install nginx configuration
+    Nginx::install();
+    Helper::write();
+    // install php fpm configuration
+    PhpFpm::install();
+
+    Helper::info(PHP_EOL . 'PhpDev installed successfully!');
+})->descriptions('Install PhpDev services');
+
 // Start the PhpDev services.
 $app->command('start', function () {
     Helper::info(PHP_EOL . 'Starting PhpDev services');
     Helper::write();
-    // start php fpm
-    PhpFpm::start();
-    Helper::write();
     // start nginx
     Nginx::start();
+    Helper::write();
+    // start php fpm
+    PhpFpm::start();
 
     Helper::info(PHP_EOL . 'All PhpDev services have been started.');
 })->descriptions('start PhpDev services');
@@ -60,11 +74,11 @@ $app->command('stop', function () {
 $app->command('restart', function () {
     Helper::info(PHP_EOL . 'Restart PhpDev service');
     Helper::write();
-    // restart PHP FPM
-    PhpFpm::restart();
-    Helper::write();
     // restart nginx
     Nginx::restart();
+    Helper::write();
+    // restart PHP FPM
+    PhpFpm::restart();
 
     Helper::info(PHP_EOL . 'PhpDev services has been restarted');
 })->descriptions('Restart PhpDev services');
@@ -150,10 +164,9 @@ $app->command('unlink site', function ($site) {
     // remove site config
     Config::removeSite($site);
     // synch PHP FPM
-    if ($unused = Config::synchPhp()) {
-        Helper::info(PHP_EOL . 'There is an unused PHP FPM');
-        // new line
-        PhpFpm::stop($unused);
+    if ($unusedPhp = Config::synchPhp()) {
+        Helper::info(PHP_EOL . 'There is an unused PHP FPM, stop it service.');
+        PhpFpm::stop($unusedPhp);
     }
 
     Helper::info(PHP_EOL . sprintf('%s successfully unlinked', $site));

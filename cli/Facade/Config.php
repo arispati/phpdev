@@ -7,6 +7,7 @@ use PhpDev\Helper\Facade;
 /**
  * Configuration facade
  *
+ * @method static void init()
  * @method static array read(?string $key = null)
  * @method static bool siteExists(string $site)
  * @method static array|null siteGet($site)

@@ -120,7 +120,10 @@ class Config
             });
             // validate the filtered sites
             if (empty($sites)) {
-                $unused[] = $php;
+                // validate php is default config or not
+                if ($config['default']['php'] != $php) {
+                    $unused[] = $php;
+                }
             }
         }
         // update config if found unused php version
@@ -198,6 +201,9 @@ class Config
         if (! File::exists($this->path())) {
             $this->write([
                 'php' => [],
+                'default' => [
+                    'php' => null
+                ],
                 'sites' => []
             ]);
         }

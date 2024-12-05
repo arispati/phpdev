@@ -18,6 +18,44 @@ class PhpFpm
     }
 
     /**
+     * Install and configure PhpFpm
+     *
+     * @return void
+     */
+    public function install(): void
+    {
+        Helper::info('Installing and configuring PHP FPM');
+        Helper::write();
+        // define variable
+        $phpConfig = $this->config->read('php');
+        $currentPhp = $this->getVersion();
+        // update default config
+        $this->config->updateKey('default', [
+            'php' => $currentPhp
+        ]);
+        // validate current php version
+        if (! in_array($currentPhp, $phpConfig)) {
+            $this->config->addPhp($currentPhp);
+        }
+        // synch php version
+        $unusedPhp = $this->config->synchPhp();
+        $phpConfig = $this->config->read('php');
+        // iterate php version
+        foreach ($phpConfig as $php) {
+            $this->createConfigurationFiles($php);
+        }
+        Helper::write();
+        // restart php fpm
+        $this->restart();
+        // stop unused php version if any
+        if (! empty($unusedPhp)) {
+            Helper::info(PHP_EOL . 'There is an unused PHP FPM, stop it service.');
+            // new line
+            PhpFpm::stop($unusedPhp);
+        }
+    }
+
+    /**
      * Start PHP FPM service
      *
      * @param string|null $phpVersion
