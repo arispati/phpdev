@@ -44,7 +44,7 @@ You may update your PhpDev installation by executing the `composer global requir
 | [switch](#switch-command)  | Switch PHP version for the site    |
 | list    | Display a list of all commands     |
 
-### Link Command *
+### Link Command
 
 `phpdev link [path] [-s|--site=] [-p|--php=]`
 
@@ -61,7 +61,7 @@ phpdev link public -s laravel -p 8.4
 
 > Link `laravel.test` with `public` folder as web root directory
 
-\* You still have to add `laravel.test` to the `hosts` file on windows
+:information_source: You still have to add `laravel.test` to the `hosts` file on windows
 
 ### Proxy Command
 
