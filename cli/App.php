@@ -60,7 +60,7 @@ if (is_dir(PHPDEV_HOME_PATH)) {
         PhpFpm::start();
 
         Helper::info(PHP_EOL . 'All PhpDev services have been started.');
-    })->descriptions('start PhpDev services');
+    })->descriptions('Start PhpDev services');
 
     // Stop the PhpDev services.
     $app->command('stop', function () {
@@ -144,7 +144,7 @@ if (is_dir(PHPDEV_HOME_PATH)) {
         Config::addSite('link', $site, $path, $php);
 
         Helper::info(PHP_EOL . sprintf('%s has been linked', $site));
-    })->descriptions('Link the current working directory to PhpDev', [
+    })->descriptions('Link the current working directory', [
         'path' => 'Root directory path for the site. Default: current directory path',
         '--site' => 'Site name. Default: current directory name',
         '--php' => 'Which php version to use. Default: current php version'
@@ -171,8 +171,8 @@ if (is_dir(PHPDEV_HOME_PATH)) {
 
         Helper::info(PHP_EOL . sprintf('%s has been proxied to %s', $site, $destination));
     })->descriptions('Add proxy site', [
-        'site' => 'Site name.',
-        'destination' => 'Proxy destination.'
+        'site' => 'Site name',
+        'destination' => 'Proxy destination'
     ]);
 
     // Unlink site
@@ -215,6 +215,11 @@ if (is_dir(PHPDEV_HOME_PATH)) {
             return Command::FAILURE;
         }
         $siteConfig = Config::siteGet($site);
+        // only 'link' type can be switch
+        if ($siteConfig['type'] == 'proxy') {
+            Helper::warning(PHP_EOL . 'Error:');
+            Helper::write(PHP_EOL . 'Switch command not compatible with proxy type');
+        }
         // PHP FPM
         $php = PhpFpm::getVersion($php);
         // validate php version installed
