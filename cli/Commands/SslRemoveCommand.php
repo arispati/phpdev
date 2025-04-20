@@ -16,7 +16,7 @@ class SslRemoveCommand
      */
     public static function description(): string
     {
-        return 'Add SSL Certificate to the site';
+        return 'Remove SSL Certificate for the site';
     }
 
     /**
