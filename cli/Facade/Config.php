@@ -13,7 +13,7 @@ use PhpDev\Helper\Facade;
  * @method static array|null siteGet($site)
  * @method static bool phpExists($php)
  * @method static array synchPhp()
- * @method static void addSite(string $type, string $site, string $path, ?string $php = null)
+ * @method static void addSite(string $type, string $site, string $path, ?string $php = null, ?string $ssl = null)
  * @method static void removeSite(string $site)
  *
  * @see \PhpDev\App\Config

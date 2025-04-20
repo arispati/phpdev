@@ -7,7 +7,7 @@ use PhpDev\Helper\Facade;
 /**
  * Site facade
  *
- * @method static string name(?string $name = null)
+ * @method static string name(?string $name = null, ?string $tld = null)
  * @method static string path(?string $path = null)
  *
  * @see \PhpDev\App\Site

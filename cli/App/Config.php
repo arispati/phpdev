@@ -141,9 +141,10 @@ class Config
      * @param string $site
      * @param string $path
      * @param string|null $php
+     * @param string|null $ssl
      * @return void
      */
-    public function addSite(string $type, string $site, string $path, ?string $php = null): void
+    public function addSite(string $type, string $site, string $path, ?string $php = null, ?string $ssl = null): void
     {
         // get sites config
         $config = $this->read('sites');
@@ -152,7 +153,9 @@ class Config
             'name' => $site,
             'path' => $path,
             'type' => $type,
-            'php' => $php ?? '-'
+            'php' => $php ?? '-',
+            'ssl' => (bool) $ssl,
+            'ssl_path' => $ssl
         ];
         // update config
         $this->updateKey('sites', $config);

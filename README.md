@@ -1,8 +1,8 @@
 # PhpDev
-PhpDev is a local PHP development environment inspired by [Laravel Valet](https://github.com/laravel/valet) for WSL on Windows.
+PhpDev is a local PHP development environment inspired by [Laravel Valet](https://github.com/laravel/valet) for Linux and WSL on Windows.
 
 ## Installation
-> PhpDev requires WSL on Windows with Ubuntu OS, [Nginx](https://nginx.org) and [Homebrew](https://brew.sh).
+> PhpDev requires Linux or WSL on Windows with Ubuntu OS, [Nginx](https://nginx.org) and [Homebrew](https://brew.sh).
 > 
 > Before installation, you should make sure that no other programs such as Apache that binding to your local machine's port 80.
 

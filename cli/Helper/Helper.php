@@ -100,7 +100,7 @@ class Helper
     public static function endWith(string $haystack, array|string $needles): bool
     {
         foreach ((array) $needles as $needle) {
-            if (substr($haystack, -strlen($needle)) === (string) $needle) {
+            if ((string) $needle !== '' && str_ends_with($haystack, $needle)) {
                 return true;
             }
         }
@@ -118,7 +118,25 @@ class Helper
     public static function startWith(string $haystack, array|string $needles): bool
     {
         foreach ((array) $needles as $needle) {
-            if ((string) $needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0) {
+            if ((string) $needle !== '' && str_starts_with($haystack, $needle)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if a given string contains a given substring.
+     *
+     * @param string $haystack
+     * @param array|string $needles
+     * @return boolean
+     */
+    public static function contains(string $haystack, array|string $needles): bool
+    {
+        foreach ((array) $needles as $needle) {
+            if ((string) $needle !== '' && str_contains($haystack, $needle)) {
                 return true;
             }
         }

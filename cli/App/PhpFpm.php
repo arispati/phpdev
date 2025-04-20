@@ -2,21 +2,13 @@
 
 namespace PhpDev\App;
 
+use PhpDev\Facade\Brew;
+use PhpDev\Facade\Config;
 use PhpDev\Helper\File;
 use PhpDev\Helper\Helper;
 
 class PhpFpm
 {
-    /**
-     * Class constructor
-     */
-    public function __construct(
-        protected Brew $brew,
-        protected Config $config
-    ) {
-        //
-    }
-
     /**
      * Install and configure PhpFpm
      *
@@ -26,19 +18,19 @@ class PhpFpm
     {
         Helper::info('Installing and configuring PHP FPM');
         // define variable
-        $phpConfig = $this->config->read('php');
+        $phpConfig = Config::read('php');
         $currentPhp = $this->getVersion();
         // update default config
-        $this->config->updateKey('default', [
+        Config::updateKey('default', [
             'php' => $currentPhp
         ]);
         // validate current php version
         if (! in_array($currentPhp, $phpConfig)) {
-            $this->config->addPhp($currentPhp);
+            Config::addPhp($currentPhp);
         }
         // synch php version
-        $unusedPhp = $this->config->synchPhp();
-        $phpConfig = $this->config->read('php');
+        $unusedPhp = Config::synchPhp();
+        $phpConfig = Config::read('php');
         // iterate php version
         foreach ($phpConfig as $php) {
             $this->createConfigurationFiles($php);
@@ -66,7 +58,7 @@ class PhpFpm
         // get services
         $services = is_null($phpVersion) ? $this->utilizedPhpVersions() : $this->serviceName($phpVersion);
         // start services
-        $this->brew->startService($services);
+        Brew::startService($services);
     }
 
     /**
@@ -86,7 +78,12 @@ class PhpFpm
             return $this->serviceName($php);
         }, $phps);
         // stop services
-        $this->brew->stopService($services);
+        Brew::stopService($services);
+        // remove log file
+        foreach ($phps as $php) {
+            $logFileName = sprintf('php%s-fpm.log', preg_replace('~[^\d]~', '', $php));
+            File::unlink(sprintf('%s/log/php-fpm/%s', PHPDEV_HOME_PATH, $logFileName));
+        }
     }
 
     /**
@@ -106,7 +103,7 @@ class PhpFpm
             return $this->serviceName($php);
         }, $phps);
         // stop services
-        $this->brew->restartService($services);
+        Brew::restartService($services);
     }
 
     /**
@@ -135,7 +132,7 @@ class PhpFpm
      */
     public function installed(string $version): bool
     {
-        return $this->brew->installed($this->serviceName($version));
+        return Brew::installed($this->serviceName($version));
     }
 
     /**
@@ -163,6 +160,7 @@ class PhpFpm
     {
         Helper::info("Updating PHP {$phpVersion} configuration");
 
+        // get FPM config file path
         $fpmConfigFile = $this->fpmConfigPath($phpVersion);
 
         File::ensureDirExists(dirname($fpmConfigFile));
@@ -183,22 +181,20 @@ class PhpFpm
         // Create FPM Config File from stub
         File::put($fpmConfigFile, $contents);
 
-        // Create other config files from stubs
-        $destDir = dirname(dirname($fpmConfigFile)) . '/conf.d';
-        File::ensureDirExists($destDir);
+        // Create FPM .ini file from stub
+        $phpIniFile = $this->fpmIniPath($phpVersion);
 
-        File::put(
-            $destDir . '/php-memory-limits.ini',
-            File::getStub('php-memory-limits.ini')
-        );
+        File::ensureDirExists(dirname($phpIniFile));
 
+        // parsing stub
         $logFileName = sprintf('php%s-fpm.log', preg_replace('~[^\d]~', '', $phpVersion));
         $contents = str_replace(
             ['PHPDEV_HOME_PATH', 'PHPDEV_PHP_FPM_LOG'],
             [PHPDEV_HOME_PATH, $logFileName],
-            File::getStub('phpfpm-error-log.ini')
+            File::getStub('phpfpm.ini')
         );
-        File::put($destDir . '/error_log.ini', $contents);
+        // Create FPM .ini File from stub
+        File::put($phpIniFile, $contents);
 
         // Create log directory and file
         File::ensureDirExists(PHPDEV_HOME_PATH . '/log/php-fpm');
@@ -214,7 +210,22 @@ class PhpFpm
     public function fpmConfigPath(string $phpVersion): string
     {
         return sprintf(
-            '%s/etc/php/%s/php-fpm.d/phpdev-fpm.conf',
+            '%s/etc/php/%s/php-fpm.d/phpdev.conf',
+            PHPDEV_BREW_PATH,
+            $phpVersion
+        );
+    }
+
+    /**
+     * Get the path to the FPM .ini configuration file for the current PHP version.
+     *
+     * @param string $phpVersion
+     * @return string
+     */
+    public function fpmIniPath(string $phpVersion): string
+    {
+        return sprintf(
+            '%s/etc/php/%s/conf.d/phpdev.ini',
             PHPDEV_BREW_PATH,
             $phpVersion
         );
@@ -251,7 +262,7 @@ class PhpFpm
      */
     public function utilizedPhpVersions(): array
     {
-        $config = $this->config->read();
+        $config = Config::read();
 
         return array_map(function ($phpVersion) {
             return $this->serviceName($phpVersion);

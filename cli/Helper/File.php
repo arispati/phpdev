@@ -2,6 +2,9 @@
 
 namespace PhpDev\Helper;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 class File
 {
     /**
@@ -110,5 +113,29 @@ class File
         $path = sprintf('%s/%s', PHPDEV_STUB_PATH, $filename);
 
         return self::get($path);
+    }
+
+    /**
+     * Delete directory
+     *
+     * @param string $dirPath
+     * @return void
+     */
+    public static function deleteDirectory(string $dirPath): void
+    {
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+        // iterate paths
+        foreach ($iterator as $file) {
+            if ($file->isDir()) {
+                rmdir($file->getPathname());
+            } else {
+                unlink($file->getPathname());
+            }
+        }
+        // remove dir
+        rmdir($dirPath);
     }
 }

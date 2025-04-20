@@ -16,7 +16,7 @@ $inTestingEnvironment = strpos($_SERVER['SCRIPT_NAME'], 'phpunit') !== false;
 $inWslEnvironment = str_contains(strtolower(exec('uname -r')), 'microsoft');
 
 if (PHP_OS !== 'Linux' && ! $inWslEnvironment && ! $inTestingEnvironment) {
-    echo 'PhpDev only supports WSL.' . PHP_EOL;
+    echo 'PhpDev only supports Linux or WSL.' . PHP_EOL;
 
     exit(1);
 } else {
@@ -35,7 +35,7 @@ if (version_compare(PHP_VERSION, $minimumPhpVersion, '<')) {
 }
 
 if (exec('which nginx') == '' && ! $inTestingEnvironment) {
-    echo 'PhpDev requires Nginx to be installed on your WSL.' . PHP_EOL;
+    echo 'PhpDev requires Nginx to be installed on your system.' . PHP_EOL;
 
     exit(1);
 } else {
@@ -48,7 +48,7 @@ if (exec('which nginx') == '' && ! $inTestingEnvironment) {
 }
 
 if (exec('which brew') == '' && ! $inTestingEnvironment) {
-    echo 'PhpDev requires Homebrew to be installed on your WSL.' . PHP_EOL;
+    echo 'PhpDev requires Homebrew to be installed on your system.' . PHP_EOL;
 
     exit(1);
 }

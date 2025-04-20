@@ -1,6 +1,6 @@
 {
     "name": "arispati/phpdev",
-    "description": "A more enjoyable local development experience for WSL on Windows.",
+    "description": "A more enjoyable local development experience for Linux and WSL on Windows.",
     "license": "MIT",
     "autoload": {
         "files": [
@@ -21,8 +21,8 @@
         "php": "^8.3",
         "mnapoli/silly": "^1.9",
         "symfony/process": "^7.1",
-        "illuminate/collections": "^11.0",
-        "illuminate/container": "^11.0"
+        "illuminate/collections": "^11.0|^12.0",
+        "illuminate/container": "^11.0|^12.0"
     },
     "bin": [
         "phpdev"

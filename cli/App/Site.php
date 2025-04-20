@@ -2,6 +2,7 @@
 
 namespace PhpDev\App;
 
+use PhpDev\Helper\Cli;
 use PhpDev\Helper\Helper;
 
 class Site
@@ -10,9 +11,10 @@ class Site
      * Get site name
      *
      * @param string|null $name
+     * @param string|null $tld
      * @return string
      */
-    public function name(?string $name = null): string
+    public function name(?string $name = null, ?string $tld = null): string
     {
         // is name already given
         if (! empty($name)) {
@@ -23,12 +25,13 @@ class Site
         // return site name
         site_name:
         // normalized site name
-        $tld = sprintf('.%s', PHPDEV_TLD);
+        $tld = is_null($tld) ? PHPDEV_TLD : ltrim($tld, '.');
+        $tld = sprintf('.%s', $tld);
         if (Helper::endWith($name, $tld)) {
             $name = substr($name, 0, -strlen($tld));
         }
         // return site name with TLD
-        return sprintf('%s.%s', $name, PHPDEV_TLD);
+        return $name . $tld;
     }
 
     /**
@@ -39,6 +42,16 @@ class Site
      */
     public function path(?string $path = null): string
     {
-        return rtrim(sprintf('%s/%s', PHPDEV_CURRENT_DIR_PATH, $path), '/');
+        // check the given path
+        if (Helper::startWith($path, ['.', './', '/'])) {
+            $path = realpath($path);
+        } else {
+            $path = realpath(sprintf('%s/%s', PHPDEV_CURRENT_DIR_PATH, $path));
+        }
+        // validate path
+        if (! $path) {
+            throw new \Exception('Invalid path');
+        }
+        return rtrim($path, '/');
     }
 }
